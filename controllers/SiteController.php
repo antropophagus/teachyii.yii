@@ -6,6 +6,7 @@ use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
+use yii\data\Pagination;
 use yii\filters\VerbFilter;
 use app\models\mymodel;
 
@@ -25,7 +26,17 @@ class SiteController extends Controller //Site - название папки, с
     public function actionMypage()
     {
         $var = 'Hello!';
-        $array = mymodel::getAll();
-        return $this->render('mypage',['var' => $var,'array'=>$array]); //Передача переменных в файл view
+        $array = mymodel::find();
+        $pagination = new Pagination ([
+          'defaultPageSize' => 3,
+          'totalCount' => $array->count(),
+        ]);
+
+        $countries = $array
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        return $this->render('mypage',['var' => $var,'countries'=>$countries, 'pagination'=>$pagination]); //Передача переменных в файл view
     }
 }
